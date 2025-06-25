@@ -9,7 +9,7 @@ public class InputReader : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKey(_shootKey))
+        if (Input.GetKeyDown(_shootKey))
             OnMove();
     }
 
