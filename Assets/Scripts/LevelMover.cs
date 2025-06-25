@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class LevelMover : MonoBehaviour
 {
-    [SerializeField] private float speed = 3f;
+    [SerializeField] private float speed = 5f;
 
     private void Update()
     {
