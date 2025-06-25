@@ -10,9 +10,9 @@ public class InputReader : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(_shootKey))
-            OnMove();
+            OnShoot();
     }
 
-    private void OnMove() =>
+    private void OnShoot() =>
         Shooting?.Invoke();
 }
