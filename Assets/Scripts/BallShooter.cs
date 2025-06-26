@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class BallShooter : MonoBehaviour
@@ -5,8 +6,14 @@ public class BallShooter : MonoBehaviour
     [SerializeField] private InputReader _inputReader;
     [SerializeField] private Projectile _projectilePrefab;
     [SerializeField] private float _throwForce = 10f;
+    [SerializeField] private int _maxProjectileCount = 20;
 
     private Pool<Projectile> _projectilePool;
+    private int currentProjectileCount;
+
+    public event Action ProjectilesDepleted;
+
+    public int CurrentProjectileCount => currentProjectileCount;
 
     private void Awake()
     {
@@ -17,6 +24,11 @@ public class BallShooter : MonoBehaviour
            
             return projectile;
         });
+    }
+
+    private void Start()
+    {
+        currentProjectileCount = _maxProjectileCount;
     }
 
     private void OnEnable()
@@ -31,11 +43,15 @@ public class BallShooter : MonoBehaviour
 
     private void OnShooting()
     {
-        Shoot();
+        if (currentProjectileCount > 0)
+            Shoot();
+        else
+            ProjectilesDepleted?.Invoke();
     }
 
     private void Shoot()
     {
+        ReduceProjectileCount();
         Projectile projectile = _projectilePool.GetObject();
         projectile.transform.position = transform.position;
         projectile.transform.rotation = Quaternion.identity;
@@ -50,4 +66,7 @@ public class BallShooter : MonoBehaviour
 
         rigidbody.AddForce(throwDirection * _throwForce, ForceMode.Impulse);
     }
+
+    private void ReduceProjectileCount() =>
+        currentProjectileCount--;
 }
