@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -6,10 +5,9 @@ public class Projectile : MonoBehaviour
 {
     [SerializeField] private float _lifeTime = 3f;
 
-    public event Action<Projectile> Destroyed;
-
     private Pool<Projectile> _pool;
     private WaitForSeconds _waitLifeTime;
+    private Coroutine _lifeTimeCoroutine;
 
     private void OnEnable()
     {
@@ -17,26 +15,27 @@ public class Projectile : MonoBehaviour
         StartCoroutine(DelayedDestroy());
     }
 
-    public void Initialize(Pool<Projectile> pool)
+    private void OnDisable()
     {
-        _pool = pool;
+        if (_lifeTimeCoroutine != null)
+        {
+            StopCoroutine(_lifeTimeCoroutine);
+            _lifeTimeCoroutine = null;
+        }
     }
+
+    public void Initialize(Pool<Projectile> pool) =>
+        _pool = pool;
 
     private IEnumerator DelayedDestroy()
     {
         yield return _waitLifeTime;
-        Destroy();
+        ReturnToPool();
     }
 
     private void ReturnToPool()
     {
         gameObject.SetActive(false);
         _pool.Release(this);
-    }
-
-    private void Destroy()
-    {
-        Destroyed?.Invoke(this);
-        Destroy(gameObject);
     }
 }
